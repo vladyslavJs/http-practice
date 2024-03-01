@@ -7,6 +7,7 @@ import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { GiNewspaper } from "react-icons/gi";
 import { RiSignalWifiErrorLine } from "react-icons/ri";
 import { FcPlus } from "react-icons/fc";
+import toast, { Toaster } from 'react-hot-toast';
 
 
 // HTTP запит потрібно виконати коли буде нова query, тобто submit форма і ми отримуємо нову query,
@@ -27,8 +28,11 @@ export default function App() {
 
     async function getData() {
       try {
+        setIsLoading(true);
+        setError(false);
         const data = await fetchArticles(searchQuery, page);
-        setArticles((prevArticles) => {return[...prevArticles, ...data]}); //операція від попереднього, без перезаписування
+        setArticles((prevArticles) => { return [...prevArticles, ...data] }); //операція від попереднього, без перезаписування
+        toast.success('Successfully!')
       } catch (error) {
         console.log(error);
         setError(true);
@@ -75,11 +79,12 @@ export default function App() {
       <div>
         <p className={css.title}>HTTP request <GiNewspaper /> </p>
         <SearchForm onSearch={handleSearch} />
-        {isLoading && <span>Loading articles... <AiOutlineLoading3Quarters /></span>}
         {error && <span>Server not found <RiSignalWifiErrorLine /></span>}
         <div className={css.container}>
           {articles.length > 0 && <ArticlesList items={articles} />}
         </div>
+        <Toaster />
+        <div>{isLoading && <span>Loading articles... <AiOutlineLoading3Quarters /></span>}</div>
         {articles.length > 0 && <button onClick={handleLoadMore}>Load more<FcPlus /></button>}
       </div>
     )
